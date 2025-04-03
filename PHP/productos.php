@@ -1,6 +1,14 @@
 <?php
 session_start();
-require_once '../classes/Product.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once 'autoload.php';
+
+// Importar clases necesarias
+use App\Core\Database\MySQLDatabase;
+use App\Core\Database\DatabaseConfiguration;
+use App\Shop\Repositories\ProductRepository;
 
 // Verificar si el usuario está logueado
 if (!isset($_SESSION['correo'])) {
@@ -11,11 +19,41 @@ if (!isset($_SESSION['correo'])) {
     exit();
 }
 
-// Crear instancia de la clase Product
-$productObj = new Product();
+// Cargar configuración
+$config = require_once '../src/Config/Config.php';
+
+// Crear objeto de configuración de base de datos
+$dbConfig = new DatabaseConfiguration(
+    $config['database']['host'],
+    $config['database']['username'],
+    $config['database']['password'],
+    $config['database']['database']
+);
+
+// Crear instancia de la base de datos
+$db = new MySQLDatabase($dbConfig);
+
+// Crear instancia del repositorio de productos
+$productRepository = new ProductRepository($db);
 
 // Obtener todas las categorías
-$categorias = $productObj->getAllCategories();
+$categorias = $productRepository->getAllCategories();
+
+// Obtener todos los productos para usar en JavaScript
+$productos = $productRepository->findAll();
+
+// Convertir objetos Product a arrays para JSON
+$productosArray = [];
+foreach ($productos as $producto) {
+    $productosArray[] = [
+        'producto_ID' => $producto->getId(),
+        'nombre_producto' => $producto->getName(),
+        'descripcion' => $producto->getDescription(),
+        'precio' => $producto->getPrice(),
+        'cantidad' => $producto->getStock(),
+        'categoria' => $producto->getCategory()
+    ];
+}
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +83,7 @@ $categorias = $productObj->getAllCategories();
 
     <script>
         // Obtener todos los productos desde el servidor
-        const productos = <?php echo json_encode($productObj->getAllProducts()); ?>;
+        const productos = <?php echo json_encode($productosArray); ?>;
 
         function mostrarProductos(categoria) {
             const productosDiv = document.getElementById('productos');
@@ -61,7 +99,7 @@ $categorias = $productObj->getAllCategories();
                 const nombre_imagen = producto.nombre_producto.toLowerCase().replace(/ /g, '_') + '.jpg';
                 productosDiv.innerHTML += `
                     <div class='producto'>
-                        <img src='../IMG/${nombre_imagen}' alt='${producto.nombre_producto}' />
+                        <img src='../IMG-P/${nombre_imagen}' alt='${producto.nombre_producto}' />
                         <div>
                             <h2>${producto.nombre_producto}</h2>
                             <p class="precio">Precio: $${parseFloat(producto.precio).toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
