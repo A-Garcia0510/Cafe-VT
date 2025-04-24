@@ -1,112 +1,210 @@
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
+:root {
+    --primary-color: #2C3E50;
+    --secondary-color: #3498DB;
+    --light-color: #ECF0F1;
+    --accent-color: #E74C3C;
+    --text-color: #2C3E50;
+    --background-color: #F9F9F9;
+}
+
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 2rem;
 }
 
 h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 3px;
+    background-color: var(--accent-color);
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #carrito {
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 20px auto;
-    max-width: 700px; /* Incrementa el ancho */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .producto {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    padding: 1.5rem;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    border-bottom: 1px solid #eaeaea;
-    padding: 15px 0; /* Aumenta el padding */
+    text-align: center;
 }
 
-.producto:last-child {
-    border-bottom: none;
+.producto:hover {
+    transform: translateY(-5px);
 }
 
-.info {
-    flex-grow: 1;
+.producto img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    object-fit: cover;
 }
 
-.info p {
-    margin: 5px 0;
-    color: #777; /* Color de texto sutil */
+.producto h2 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
 }
 
-.eliminar-button {
-    background-color: #e74c3c;
+.producto p {
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.producto button {
+    background-color: var(--accent-color);
     color: white;
     border: none;
-    border-radius: 3px;
-    padding: 8px 12px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 1rem;
+    font-weight: 500;
 }
 
-.eliminar-button:hover {
+.producto button:hover {
     background-color: #c0392b;
-    transform: scale(1.05); /* Añade un pequeño zoom al pasar */
+    transform: translateY(-2px);
 }
 
 .total {
-    margin-top: 20px;
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 5px;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     text-align: right;
-    font-size: 1.1em;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
 }
 
-#volver,
-#finalizarCompra {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 12px 25px; /* Mejora el tamaño de los botones */
-    font-size: 1em;
+#volver, #finalizarCompra {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
     cursor: pointer;
-    display: block;
-    margin: 15px auto; /* Mejora el espaciado */
-    transition: background 0.3s, transform 0.2s;
+    border: none;
+    margin: 0 0.5rem;
+    font-size: 1rem;
 }
 
-#finalizarCompra {
-    background-color: #27ae60;
-}
-
-#finalizarCompra:hover {
-    background-color: #219653;
-    transform: scale(1.05); /* Añade un pequeño zoom al pasar */
+#volver {
+    background-color: var(--secondary-color);
+    color: white;
 }
 
 #volver:hover {
     background-color: #2980b9;
-    transform: scale(1.05);
+    transform: translateY(-2px);
 }
 
-.producto img {
-    width: 90px; /* Ajusta el tamaño */
-    height: 90px;
-    object-fit: cover;
-    margin-left: 20px;
-    border-radius: 10px;
+#finalizarCompra {
+    background-color: var(--accent-color);
+    color: white;
 }
 
-/* Estilo para mensaje cuando el carrito está vacío */
+#finalizarCompra:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Mensaje cuando no hay productos */
 #carrito p {
+    grid-column: 1 / -1;
     text-align: center;
-    color: #888;
-    font-size: 1.1em;
-    padding: 20px 0;
-    background: #f9f9f9;
-    border-radius: 5px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    
+    #carrito {
+        grid-template-columns: 1fr;
+    }
+    
+    .total {
+        max-width: 100%;
+    }
+    
+    #volver, #finalizarCompra {
+        width: 100%;
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+    
+    .buttons-container {
+        flex-direction: column;
+    }
+}
+
+/* Animación para los botones y productos */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.producto button:active, #volver:active, #finalizarCompra:active {
+    animation: pulse 0.3s;
 }

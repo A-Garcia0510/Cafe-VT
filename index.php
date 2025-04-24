@@ -11,106 +11,561 @@ if (isset($_SESSION['correo'])) {
     // Si está logueado, no redirigir a login
     // Puedes incluir un mensaje de bienvenida o similar si lo deseas
 }
-
-// Resto del código index.php original...
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="estilos/styles.css">
-  <link rel="stylesheet" type="text/css" href="estilos/barra.css">
-  <title>Casino-Express</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino-Express</title>
+    <link rel="stylesheet" type="text/css" href="estilos/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #3498DB;
+            --light-color: #ECF0F1;
+            --accent-color: #E74C3C;
+            --text-color: #2C3E50;
+            --background-color: #F9F9F9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            height: 60px;
+        }
+        
+        .logo-container img {
+            height: 100%;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 80vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            padding: 2rem;
+            z-index: 1;
+        }
+        
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        /* Servicios Section */
+        .section {
+            padding: 4rem 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            padding: 2rem;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .service-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .service-card p {
+            color: #666;
+        }
+        
+        /* Productos Destacados */
+        .featured-products {
+            background-color: var(--light-color);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .product-card:hover .product-img img {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+        
+        .product-info p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: white;
+            padding-top: 3rem;
+        }
+        
+        .footer-main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-column h3 i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            text-decoration: none;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .contact-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .contact-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .footer-bottom {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        /* Estilos para los tutoriales */
+        #tutorialLinks {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        
+        #tutorialLinks a {
+            display: block;
+            padding: 0.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        #tutorialLinks a:hover {
+            background-color: var(--light-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo-container {
+                margin-bottom: 1rem;
+            }
+            
+            .nav-links {
+                margin-bottom: 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem 0;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Mensajes de confirmación */
+        #mensaje-confirmacion {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-  <header class="header">
-    <nav>
-        <ul class="nav-links">
-            <li><a href=""><b>Menú</b></a></li>
-                <div id="tutorialLinks">
-                    <a href="http://www.w3schools.com/js/default.asp">Tutorial JavaScript</a>
-                    <a href="http://www.w3schools.com/html/default.asp">Tutorial HTML</a>
-                    <a href="http://www.w3schools.com/css/default.asp">Tutorial CSS</a>
-                </div>
-            <li><a href="Servicios.html"><b>Servicios</b></a></li>
-            <li><a href="PHP/productos.php"><b>Productos</b></a></li>
-            <li><a href="Ayuda.html"><b>Ayuda</b></a></li>
-            <li>
-                <?php if (isset($_SESSION['correo'])): ?>
-                    <a href="PHP/visual_datos.php"><b>Perfil</b></a>
-                <?php else: ?>
-                    <a href="login.html"><b>Iniciar Sesión</b></a>
-                <?php endif; ?>
-            </li>
-        </ul>
-        <div class="logo-container">
-            <img src="Logo1.png" alt="Casino-Express">
+    <header>
+        <nav class="navbar">
+            <div class="logo-container">
+                <img src="Logo1.png" alt="Casino-Express">
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.php"><b>Inicio</b></a></li>
+                <li><a href="Servicios.html"><b>Servicios</b></a></li>
+                <li><a href="PHP/productos.php"><b>Productos</b></a></li>
+                <li><a href="Ayuda.html"><b>Ayuda</b></a></li>
+                <li>
+                    <?php if (isset($_SESSION['correo'])): ?>
+                        <a href="PHP/visual_datos.php"><b>Perfil</b></a>
+                    <?php else: ?>
+                        <a href="login.html"><b>Iniciar Sesión</b></a>
+                    <?php endif; ?>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <video id="background-video" autoplay loop muted>
+            <source src="video1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h2>Bienvenidos a  Ethos Coffe</h2>
+            <p>Tu destino para una experiencia de compra excepcional.</p>
+            <a href="PHP/productos.php" class="btn">Ver Productos</a>
         </div>
-    </nav>
-</header>
+    </section>
 
-<!-- Icono de servicios -->
-<div id="serviciosLink"></div>
+    <section class="section" id="servicios">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestros Servicios</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>Productos de Alta Calidad</h3>
+                    <p>Ofrecemos una amplia gama de productos con descripciones detalladas para que conozcas exactamente lo que estás comprando.</p>
+                </div>
+                
+                <div class="service-card">
+                    <h3>Envío Rápido</h3>
+                    <p>Entendemos que quieres recibir tus productos lo antes posible. Te proporcionamos estimaciones realistas de tiempo de entrega.</p>
+                </div>
+                
+                <div class="service-card">
+                    <h3>Atención al Cliente</h3>
+                    <p>Nuestro equipo está disponible para resolver todas tus dudas y preocupaciones a través de correo electrónico o teléfono.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Tabla de servicios -->
-  <table id="serviciosTable" class="hidden">
-    <tr>
-      <td>Descripciones detalladas de productos:
+    <section class="section featured-products">
+        <div class="container">
+            <div class="section-title">
+                <h2>Productos Destacados</h2>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/400/400" alt="Producto 1">
+                    </div>
+                    <div class="product-info">
+                        <h3>Producto Premium</h3>
+                        <p>Disfruta de nuestros productos de la más alta calidad.</p>
+                        <div class="price">$99.99</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/400/400" alt="Producto 2">
+                    </div>
+                    <div class="product-info">
+                        <h3>Oferta Especial</h3>
+                        <p>Aprovecha nuestras ofertas por tiempo limitado.</p>
+                        <div class="price">$79.99</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/400/400" alt="Producto 3">
+                    </div>
+                    <div class="product-info">
+                        <h3>Recién Llegado</h3>
+                        <p>Descubre nuestros productos más recientes.</p>
+                        <div class="price">$129.99</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="/api/placeholder/400/400" alt="Producto 4">
+                    </div>
+                    <div class="product-info">
+                        <h3>Producto Destacado</h3>
+                        <p>Uno de nuestros productos más populares.</p>
+                        <div class="price">$149.99</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        1. Explora nuestros productos para descubrir sus características únicas y beneficios excepcionales. 
-        Cada artículo tiene una descripción detallada que te ayudará a tomar la mejor decisión de compra.
-        Precios y opciones de pago:
-        
-        2. Ofrecemos precios transparentes para que sepas exactamente lo que estás pagando.
-        Además, tenemos opciones de pago flexibles para que elijas la que mejor se adapte a tus necesidades y conveniencia.
-        Proceso de compra:
-        
-        3. Comprar con nosotros es fácil y rápido. Nuestro proceso de compra es simple, y estaremos contigo en cada paso del camino.
-        Solo tienes que seguir nuestros sencillos pasos para asegurarte de obtener exactamente lo que deseas.
-        Políticas de devolución y garantía:
-        
-        4. Queremos que te sientas seguro con tu compra. Por eso, ofrecemos una política de devolución sin complicaciones
-        y garantías que respaldan la calidad de nuestros productos. Si no estás satisfecho, estamos aquí para ayudarte.
-        Tiempo y costos de envío:
-        
-        5. Entendemos que quieres recibir tus productos lo antes posible. Proporcionamos estimaciones
-        realistas sobre el tiempo de entrega y opciones de seguimiento para que siempre estés informado sobre el estado de tu pedido.
-        Información de contacto y atención al cliente:
-        
-        6. ¿Tienes alguna pregunta o preocupación? Estamos aquí para ayudarte. Puedes ponerte en contacto con
-        nuestro equipo de atención al cliente a través de correo electrónico o teléfono durante nuestros horarios de atención.
-        Reseñas y testimonios:
-        
-        7. Descubre lo que dicen nuestros clientes sobre sus experiencias. Las reseñas y testimonios 
-        reales son la mejor manera de conocer la calidad de nuestros productos y el nivel de servicio que ofrecemos.
-        Información sobre la empresa:
-        
-        8. Queremos que nos conozcas. Somos una empresa comprometida con la calidad y la satisfacción del cliente. 
-        Descubre nuestra historia, valores y lo que nos hace únicos en el mercado.
-        FAQ (Preguntas frecuentes):
-        
-        9. Consulta nuestras preguntas frecuentes para obtener respuestas rápidas a las cuestiones más comunes. 
-        Queremos facilitar tu experiencia de compra y resolver cualquier duda que puedas tener.</td>
-    </tr>
-    </table>
     <div id="mensaje-confirmacion"></div>
 
-    <video id="background-video" autoplay loop muted>
-      <source src="video1.mp4" type="video/mp4">
-    </video>
+    <footer>
+        <div class="footer-main">
+            <div class="footer-column">
+                <h3><i>👤</i> Mi cuenta</h3>
+                <ul class="footer-links">
+                    <li><a href="login.html">Iniciar sesión</a></li>
+                    <li><a href="registro.html">Registrarse</a></li>
+                    <li><a href="PHP/visual_datos.php">Mi perfil</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3><i>🏠</i> Nuestros Servicios</h3>
+                <ul class="footer-links">
+                    <li><a href="Servicios.html">Catálogo de servicios</a></li>
+                    <li><a href="Ayuda.html">Ayuda</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3><i>🛒</i> Productos</h3>
+                <ul class="footer-links">
+                    <li><a href="PHP/productos.php">Ver productos</a></li>
+                    <li><a href="#">Métodos de pago</a></li>
+                    <li><a href="#">Envíos</a></li>
+                    <li><a href="#">Devoluciones</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>¿Necesitas ayuda?</h3>
+                <p>Estamos aquí para ayudarte con cualquier duda o problema.</p>
+                <a href="Ayuda.html" class="contact-btn">Contáctanos</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Casino-Express. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 
-  <footer>
-  <p>&copy; 2024 Tienda de Casino-Express. Todos los derechos reservados.</p>
-  </footer>
-  <script src="JavaScript/Java1.js"></script>
-  <script>
-    function toggleMenu() {
-      var navLinks = document.querySelector('.nav-links');
-      navLinks.classList.toggle('active');
-    }
-  </script>
+    <script src="JavaScript/Java1.js"></script>
 </body>
 </html>
 <?php
