@@ -338,14 +338,12 @@ try {
     <header>
         <nav class="navbar">
             <div class="logo">
-                <h1>Café<span>Aroma</span></h1>
+                <h1>Ethos<span>Coffe</span></h1>
             </div>
             <ul class="main-menu">
-                <li><a href="../index.php#inicio">Inicio</a></li>
-                <li><a href="../index.php#menu">Menú</a></li>
-                <li><a href="../index.php#locales">Locales</a></li>
-                <li><a href="../index.php#nosotros">Sobre Nosotros</a></li>
-                <li><a href="../index.php#blog">Blog</a></li>
+                <li><a href="../index.php">Inicio</a></li>
+                <li><a href="productos.php">Menú</a></li>
+                <li><a href="../Servicios.html">Sobre Nosotros</a></li>
             </ul>
             <div class="user-actions">
                 <div class="icon">👤</div>
