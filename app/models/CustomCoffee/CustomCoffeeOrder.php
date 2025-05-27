@@ -35,12 +35,7 @@ class CustomCoffeeOrder {
 
             // Validar que la receta existe y está activa
             $receta = $this->db->fetchOne(
-                "SELECT r.receta_ID, r.precio_total,
-                        SUM(d.cantidad * d.precio_unitario) as subtotal
-                 FROM custom_coffee_recipes r
-                 LEFT JOIN custom_coffee_recipe_details d ON r.receta_ID = d.receta_ID
-                 WHERE r.receta_ID = ? AND r.estado = 'activo'
-                 GROUP BY r.receta_ID",
+                "SELECT receta_ID, precio_total FROM custom_coffee_recipes WHERE receta_ID = ? AND estado = 'activo'",
                 [$recetaId]
             );
             if (!$receta) {
@@ -48,17 +43,25 @@ class CustomCoffeeOrder {
                 throw new \Exception("Receta no encontrada o inactiva");
             }
 
-            // Calcular el precio total con IVA
-            $subtotal = floatval($receta['subtotal']);
-            $iva = $subtotal * 0.19;
-            $precioReceta = round($subtotal + $iva, 2);
-            $precioRecibido = round($precioTotal, 2);
+            // Validar que el precio coincide
+            $precioReceta = floatval($receta['precio_total']);
+            $precioRecibido = floatval($precioTotal);
             
-            error_log("[CustomCoffeeOrder::crearPedido] Precios - Recibido: $precioRecibido, Calculado: $precioReceta");
+            error_log("[CustomCoffeeOrder::crearPedido] Precios - Receta: $precioReceta, Recibido: $precioRecibido");
             
+            // Convertir el precio recibido a decimal (dividir por 1000)
+            $precioRecibido = $precioRecibido / 1000;
+            
+            // Normalizar los precios a 2 decimales
+            $precioReceta = round($precioReceta, 2);
+            $precioRecibido = round($precioRecibido, 2);
+            
+            error_log("[CustomCoffeeOrder::crearPedido] Precios normalizados - Receta: $precioReceta, Recibido: $precioRecibido");
+            
+            // Comparación exacta después de normalizar
             if ($precioReceta !== $precioRecibido) {
                 error_log("[CustomCoffeeOrder::crearPedido] Error: Precio no coincide - Recibido: $precioRecibido, Receta: $precioReceta");
-                throw new \Exception("El precio total no coincide con la receta");
+                throw new \Exception("El precio total no coincide con la receta (Recibido: $precioRecibido, Receta: $precioReceta)");
             }
 
             $this->db->beginTransaction();
@@ -96,48 +99,40 @@ class CustomCoffeeOrder {
 
                 // Validar stock antes de actualizar
                 foreach ($componentes as $componente) {
-                    $cantidad = intval($componente['cantidad']);
-                    if ($componente['stock'] < $cantidad) {
-                        error_log("[CustomCoffeeOrder::crearPedido] Error: Stock insuficiente para el componente {$componente['componente_ID']}");
-                        throw new \Exception("No hay stock suficiente para uno o más componentes");
+                    if ($componente['stock'] < $componente['cantidad']) {
+                        error_log("[CustomCoffeeOrder::crearPedido] Error: Stock insuficiente para {$componente['nombre']} (ID: {$componente['componente_ID']}) - Stock: {$componente['stock']}, Requerido: {$componente['cantidad']}");
+                        throw new \Exception("Stock insuficiente para {$componente['nombre']}");
                     }
                 }
 
-                // Crear los detalles del pedido y actualizar stock
+                // Insertar los detalles del pedido
                 foreach ($componentes as $componente) {
-                    $cantidad = intval($componente['cantidad']);
-                    
-                    // Insertar detalle
-                    $this->db->insert(
-                        'custom_coffee_order_details',
-                        [
+                    $detalleId = $this->db->insert('custom_coffee_order_details', [
                         'orden_ID' => $pedidoId,
                         'componente_ID' => $componente['componente_ID'],
-                            'cantidad' => $cantidad,
+                        'cantidad' => $componente['cantidad'],
                         'precio_unitario' => $componente['precio']
-                        ]
-                    );
+                    ]);
 
-                    // Actualizar stock
-                    $this->db->query(
-                        "UPDATE custom_coffee_components 
-                         SET stock = stock - ? 
-                         WHERE componente_ID = ?",
-                        [$cantidad, $componente['componente_ID']]
-                    );
+                    if (!$detalleId) {
+                        error_log("[CustomCoffeeOrder::crearPedido] Error: No se pudo insertar el detalle para el componente {$componente['componente_ID']}");
+                        throw new \Exception("Error al crear los detalles del pedido");
+                    }
                 }
 
                 $this->db->commit();
+                error_log("[CustomCoffeeOrder::crearPedido] Pedido creado exitosamente - ID: $pedidoId");
                 return $pedidoId;
 
             } catch (\Exception $e) {
-                $this->db->rollBack();
+                $this->db->rollback();
                 error_log("[CustomCoffeeOrder::crearPedido] Error en la transacción: " . $e->getMessage());
                 throw $e;
             }
 
         } catch (\Exception $e) {
-            error_log("[CustomCoffeeOrder::crearPedido] Error: " . $e->getMessage());
+            error_log("[CustomCoffeeOrder::crearPedido] Error general: " . $e->getMessage());
+            error_log("[CustomCoffeeOrder::crearPedido] Stack trace: " . $e->getTraceAsString());
             throw $e;
         }
     }
@@ -220,9 +215,7 @@ class CustomCoffeeOrder {
                     JSON_OBJECT(
                         'nombre', c.nombre,
                         'cantidad', d.cantidad,
-                        'precio', d.precio_unitario,
-                        'tipo', c.tipo,
-                        'unidad', c.unidad
+                        'precio', d.precio_unitario
                     )
                 ) as detalles_json
          FROM custom_coffee_orders o
@@ -341,11 +334,11 @@ class CustomCoffeeOrder {
 
             // Restaurar el stock de cada componente
             foreach ($pedido['detalles'] as $detalle) {
-                $this->db->query(
-                    "UPDATE custom_coffee_components 
-                     SET stock = stock + ? 
-                     WHERE componente_ID = ?",
-                    [$detalle['cantidad'], $detalle['componente_ID']]
+                $this->db->update(
+                    'custom_coffee_components',
+                    ['stock' => 'stock + ' . $detalle['cantidad']],
+                    'componente_ID = ?',
+                    [$detalle['componente_ID']]
                 );
             }
 
@@ -356,7 +349,6 @@ class CustomCoffeeOrder {
             return true;
         } catch (\Exception $e) {
             $this->db->rollback();
-            error_log("Error en cancelarPedido: " . $e->getMessage());
             return false;
         }
     }
