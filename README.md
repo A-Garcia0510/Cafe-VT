@@ -91,4 +91,4 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 - Sitio Web: [www.cafe-vt.com](https://www.cafe-vt.com)
 
 ---
-Desarrollado con ❤️ para la comunidad universitaria/Usuarios del Mundo
+Desarrollado con ❤️ para la comunidad universitaria/Usuarios
