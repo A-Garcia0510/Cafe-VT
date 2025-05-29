@@ -1,0 +1,63 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant PC as PurchaseController
+    participant PS as PurchaseService
+    participant CS as CartService
+    participant DB as Database
+    participant Stock as Stock Management
+    participant Auth as Authentication Service
+
+    Cliente->>UI: Inicia el proceso de compra
+    UI->>PC: Solicitar resumen del carrito
+
+    opt Si el usuario no está autenticado (incluye Iniciar Sesión)
+        PC->>Auth: Verificar autenticación
+        alt Si no autenticado
+            Auth-->>PC: Indica no autenticado
+            PC->>UI: Redirigir a página de Login
+            UI-->>Cliente: Solicita iniciar sesión
+            Note over Cliente,UI: El usuario completa el proceso de Iniciar Sesión
+            Cliente->>UI: Regresa a la página de compra (autenticado)
+            UI->>PC: Retomar solicitud de compra
+        end
+    end
+
+    PC->>CS: Obtener items del carrito(ID de usuario)
+    CS->>DB: Consultar items del carrito
+    DB-->>CS: Retorna items del carrito
+    CS-->>PC: Retorna items del carrito y total
+    PC->>UI: Mostrar resumen de la compra
+    UI-->>Cliente: Muestra productos, cantidades y total
+
+    Cliente->>UI: Confirma la compra
+    UI->>PC: Enviar confirmación de compra(ID de usuario)
+    PC->>PS: Crear compra(ID de usuario)
+    PS->>CS: Obtener items finales del carrito(ID de usuario)
+    CS->>DB: Consultar items finales del carrito
+    DB-->>CS: Retorna items finales del carrito
+    CS-->>PS: Retorna items finales
+    
+    PS->>Stock: Verificar stock final de items
+    Stock-->>PS: Confirmación de stock final
+
+    alt Si stock final suficiente
+        PS->>DB: Crear registro de compra y detalles
+        DB-->>PS: Confirmación de guardado
+        PS->>Stock: Actualizar stock de componentes/productos
+        Stock-->>PS: Confirmación de stock actualizado
+        PS->>CS: Limpiar carrito(ID de usuario)
+        CS->>DB: Eliminar items del carrito
+        DB-->>CS: Confirmación de limpieza
+        CS-->>PS: Confirmación de limpieza
+        PS-->>PC: Confirmación de compra exitosa
+        PC->>UI: Mostrar confirmación de compra y detalles
+        UI-->>Cliente: Muestra página de confirmación
+    else Si stock final insuficiente
+        PS-->>PC: Indica stock insuficiente
+        PC->>UI: Mostrar mensaje de stock insuficiente y carrito actualizado
+        UI-->>Cliente: Muestra mensaje de error
+    end
+
+``` 

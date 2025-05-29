@@ -1,0 +1,26 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant CC as CartController
+    participant CS as CartService
+    participant DB as Database
+
+    Cliente->>UI: Solicita ver el carrito
+    UI->>CC: Cargar página del carrito
+    CC->>CS: Obtener items del carrito(ID de usuario)
+    CS->>DB: Consultar items del carrito
+    DB-->>CS: Retorna items y cantidades
+    CS-->>CC: Retorna items del carrito
+    CC->>UI: Mostrar contenido del carrito
+    UI-->>Cliente: Muestra lista de productos en el carrito
+
+    Cliente->>UI: Selecciona 'Vaciar Carrito'
+    UI->>CC: Enviar solicitud Vaciar Carrito(ID de usuario)
+    CC->>CS: Limpiar carrito(ID de usuario)
+    CS->>DB: Eliminar todos los items del carrito para el usuario
+    DB-->>CS: Confirmación de eliminación
+    CS-->>CC: Confirmación de limpieza
+    CC->>UI: Actualizar visualización del carrito (vacío)
+    UI-->>Cliente: Muestra el carrito vacío
+``` 

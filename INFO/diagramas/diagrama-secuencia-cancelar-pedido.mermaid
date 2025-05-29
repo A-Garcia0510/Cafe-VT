@@ -1,0 +1,28 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    actor Empleado
+    participant UI as Interfaz de Usuario
+    participant COC as CustomOrderController
+    participant COS as CustomOrderService
+    participant DB as Database
+    participant Stock as Stock Management
+
+    Cliente->>UI: Solicita cancelar un pedido (ID de pedido)
+    UI->>COC: Enviar solicitud Cancelar Pedido(ID de pedido)
+    COC->>COS: Cancelar Pedido(ID de pedido)
+    COS->>DB: Actualizar estado del pedido a 'cancelado'
+    Note over DB,Stock: El trigger after_order_cancel restaura el stock de componentes
+    DB-->>COS: Confirmación de actualización
+    COS-->>COC: Retorna resultado de cancelación
+    alt Si cancelación exitosa
+        COC->>UI: Mostrar mensaje de éxito y estado del pedido actualizado
+        UI-->>Cliente: Muestra confirmación de cancelación
+    else Si falla la cancelación
+        COC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+
+    Empleado->>UI: Solicita cancelar un pedido (ID de pedido)
+    UI->>COC: ... (similar flow as Cliente)
+``` 

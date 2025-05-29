@@ -1,0 +1,45 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant RC as ReviewController
+    participant RS as ReviewService
+    participant RP as ReviewProxy
+    participant DB as Database
+    participant Auth as Authentication Service
+
+    Cliente->>UI: Selecciona calificar una reseña (ID de reseña)
+    UI->>RC: Cargar opciones para calificar reseña (ID de reseña)
+
+    opt Si el usuario no está autenticado (incluye Iniciar Sesión)
+        RC->>Auth: Verificar autenticación
+        alt Si no autenticado
+            Auth-->>RC: Indica no autenticado
+            RC->>UI: Redirigir a página de Login
+            UI-->>Cliente: Solicita iniciar sesión
+            Note over Cliente,UI: El usuario completa el proceso de Iniciar Sesión
+            Cliente->>UI: Regresa a la página de reseña (autenticado)
+            UI->>RC: Retomar solicitud de calificación
+        end
+    end
+
+    RC->>UI: Mostrar opciones de calificación (estrellas, etc.)
+    UI-->>Cliente: Muestra opciones
+
+    Cliente->>UI: Selecciona calificación y opcionalmente comentario
+    UI->>RC: Enviar solicitud Calificar Reseña(ID de reseña, calificación, comentario, ID de usuario)
+    RC->>RS: Calificar Reseña(ID de reseña, calificación, comentario, ID de usuario)
+    RS->>RP: Crear ReviewProxy
+    RP->>DB: Guardar calificación y comentario en tabla review_ratings (trigger before_rating_insert verifica si ya calificó)
+    DB-->>RP: Confirmación de guardado
+    RP-->>RS: Confirmación
+    RS-->>RC: Retorna resultado de calificación
+
+    alt Si calificación exitosa
+        RC->>UI: Mostrar mensaje de éxito
+        UI-->>Cliente: Muestra confirmación de calificación
+    else Si falla la calificación (ej. ya calificó)
+        RC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+``` 

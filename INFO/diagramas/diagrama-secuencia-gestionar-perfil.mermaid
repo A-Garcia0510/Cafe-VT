@@ -1,0 +1,58 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    actor Empleado
+    actor Admin
+    participant UI as Interfaz de Usuario
+    participant PC as ProfileController
+    participant US as UserService
+    participant DB as Database
+
+    Cliente->>UI: Solicita ver/editar perfil
+    UI->>PC: Solicitar datos de perfil (ID de usuario)
+    PC->>US: Obtener datos de usuario(ID de usuario)
+    US->>DB: Consultar datos del usuario
+    DB-->>US: Retorna datos del usuario
+    US-->>PC: Retorna datos del usuario
+    PC->>UI: Mostrar formulario de perfil con datos
+    UI-->>Cliente: Muestra formulario de perfil
+
+    Cliente->>UI: Envía datos de perfil actualizados
+    UI->>PC: Actualizar datos de perfil(ID de usuario, datos)
+    PC->>US: Actualizar datos de usuario(ID de usuario, datos)
+    US->>DB: Actualizar registro de usuario
+    DB-->>US: Confirmación de actualización
+    US-->>PC: Retorna resultado de actualización
+    alt Si actualización exitosa
+        PC->>UI: Mostrar mensaje de éxito
+        UI-->>Cliente: Muestra mensaje de perfil actualizado
+    else Si falla la actualización
+        PC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+
+    Admin->>UI: Solicita gestionar perfil de usuario (ID de usuario)
+    UI->>PC: Solicitar datos de perfil de usuario (ID de usuario)
+    PC->>US: Obtener datos de usuario(ID de usuario)
+    US->>DB: Consultar datos del usuario
+    DB-->>US: Retorna datos del usuario
+    US-->>PC: Retorna datos del usuario
+    PC->>UI: Mostrar formulario de perfil de usuario con datos
+    UI-->>Admin: Muestra formulario de perfil de usuario
+    
+    Admin->>UI: Envía datos de perfil de usuario actualizados
+    UI->>PC: Actualizar datos de perfil de usuario(ID de usuario, datos)
+    PC->>US: Actualizar datos de usuario(ID de usuario, datos)
+    US->>DB: Actualizar registro de usuario
+    DB-->>US: Confirmación de actualización
+    US-->>PC: Retorna resultado de actualización
+    alt Si actualización exitosa
+        PC->>UI: Mostrar mensaje de éxito
+        UI-->>Admin: Muestra mensaje de perfil de usuario actualizado
+    else Si falla la actualización
+        PC->>UI: Mostrar mensaje de error
+        UI-->>Admin: Muestra mensaje de error
+    end
+
+
+``` 

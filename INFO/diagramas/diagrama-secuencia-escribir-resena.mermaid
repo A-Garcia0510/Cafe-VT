@@ -1,0 +1,48 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant RC as ReviewController
+    participant RS as ReviewService
+    participant RP as ReviewProxy
+    participant DB as Database
+    participant Auth as Authentication Service
+
+    Cliente->>UI: Selecciona 'Escribir Reseña' (para un producto específico)
+    UI->>RC: Cargar formulario de reseña (ID de producto, ID de usuario)
+
+    opt Si el usuario no está autenticado (incluye Iniciar Sesión)
+        RC->>Auth: Verificar autenticación
+        alt Si no autenticado
+            Auth-->>RC: Indica no autenticado
+            RC->>UI: Redirigir a página de Login
+            UI-->>Cliente: Solicita iniciar sesión
+            Note over Cliente,UI: El usuario completa el proceso de Iniciar Sesión
+            Cliente->>UI: Regresa a la página de reseña (autenticado)
+            UI->>RC: Retomar solicitud de reseña
+        end
+    end
+
+    RC->>UI: Mostrar formulario para escribir reseña (ID de producto)
+    UI-->>Cliente: Muestra el formulario
+
+    Cliente->>UI: Envía contenido y calificación de la reseña
+    UI->>RC: Enviar datos de reseña(ID de producto, ID de usuario, contenido, calificación)
+    RC->>RS: Crear Reseña(ID de producto, ID de usuario, contenido, calificación)
+    RS->>RP: Crear ReviewProxy
+    RP->>DB: Guardar reseña en la base de datos (estado inicial: pendiente)
+    DB-->>RP: Confirmación de guardado
+    RP-->>RS: Confirmación
+    RS-->>RC: Retorna resultado de guardado
+
+    alt Si guardado exitoso
+        RC->>UI: Mostrar mensaje de éxito (reseña pendiente de moderación)
+        UI-->>Cliente: Muestra confirmación y estado
+    else Si falla el guardado
+        RC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+
+    Note right of RP: El Proxy controla el acceso y podría aplicar lógica de pre-moderación simple.
+
+``` 

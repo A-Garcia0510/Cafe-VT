@@ -1,0 +1,26 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant CC as CartController
+    participant CI as CartCommandInvoker
+    participant RC as RemoveFromCartCommand
+    participant CS as CartService
+    participant DB as Database
+
+    Cliente->>UI: Selecciona 'Quitar del Carrito' (item del carrito)
+    UI->>CC: Enviar solicitud Quitar del Carrito(ID de usuario, ID de producto)
+    CC->>CI: Crear RemoveFromCartCommand(ID de usuario, ID de producto)
+    CC->>CI: Ejecutar Comando
+    CI->>RC: execute()
+    RC->>CS: Quitar item del carrito(ID de usuario, ID de producto)
+    CS->>DB: Eliminar item de la tabla Carro
+    DB-->>CS: Confirmación
+    CS-->>RC: Confirmación de item quitado
+    RC-->>CI: Resultado exitoso
+    CI-->>CC: Resultado exitoso
+    CC->>UI: Actualizar visualización del carrito
+    UI-->>Cliente: Muestra carrito actualizado sin el item
+
+    Note over CI,RC: El Command Pattern permite deshacer/rehacer (Gestión del Carrito)
+``` 

@@ -1,0 +1,82 @@
+```mermaid
+graph TB
+    subgraph Frontend
+        UI[Interfaz de Usuario]
+        Views[Vistas]
+        JS[JavaScript]
+        CSS[Estilos CSS]
+    end
+
+    subgraph Backend
+        subgraph Controllers
+            AuthC[AuthController]
+            CartC[CartController]
+            CoffeeC[CustomCoffeeController]
+            ProductC[ProductController]
+            DashboardC[DashboardController]
+        end
+
+        subgraph Models
+            UserM[User Model]
+            ProductM[Product Model]
+            CartM[Cart Model]
+            CoffeeM[CustomCoffee Model]
+            ReviewM[Review Model]
+        end
+
+        subgraph Services
+            AuthS[Auth Service]
+            CartS[Cart Service]
+            CoffeeS[Coffee Service]
+            ProductS[Product Service]
+            ReviewS[Review Service]
+        end
+
+        subgraph Core
+            Router[Router]
+            Container[Container]
+            Database[Database]
+            Request[Request]
+            Response[Response]
+        end
+    end
+
+    subgraph Database
+        MySQL[(MySQL Database)]
+    end
+
+    %% Conexiones Frontend-Backend
+    UI --> Views
+    Views --> Controllers
+    JS --> Controllers
+    CSS --> Views
+
+    %% Conexiones Controllers
+    Controllers --> Services
+    Controllers --> Models
+    Controllers --> Core
+
+    %% Conexiones Services
+    Services --> Models
+    Services --> Database
+
+    %% Conexiones Models
+    Models --> Database
+
+    %% Conexiones Core
+    Core --> Database
+    Container --> Services
+    Container --> Models
+    Container --> Controllers
+
+    %% Estilos
+    classDef frontend fill:#f9f,stroke:#333,stroke-width:2px
+    classDef backend fill:#bbf,stroke:#333,stroke-width:2px
+    classDef database fill:#bfb,stroke:#333,stroke-width:2px
+    classDef core fill:#fbb,stroke:#333,stroke-width:2px
+
+    class UI,Views,JS,CSS frontend
+    class Controllers,Models,Services backend
+    class MySQL database
+    class Router,Container,Database,Request,Response core
+``` 

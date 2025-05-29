@@ -1,0 +1,25 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant CCC as CustomCoffeeController
+    participant CCS as CustomCoffeeService
+    participant CCR as CustomCoffeeRecipe
+    participant DB as Database
+
+    Cliente->>UI: Selecciona 'Guardar Receta' (después de crear café)
+    UI->>CCC: Enviar solicitud Guardar Receta(ID de usuario, datos de café, nombre receta)
+    CCC->>CCS: Guardar Receta(ID de usuario, datos de café, nombre receta)
+    CCS->>CCR: Crear objeto Receta(datos)
+    CCR->>DB: Guardar Receta y Detalles en DB
+    DB-->>CCR: Confirmación de guardado / ID de receta
+    CCR-->>CCS: Retorna ID de receta
+    CCS-->>CCC: Retorna resultado de guardado
+    alt Si guardado exitoso
+        CCC->>UI: Mostrar mensaje de éxito
+        UI-->>Cliente: Muestra mensaje de receta guardada
+    else Si falla el guardado
+        CCC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+``` 

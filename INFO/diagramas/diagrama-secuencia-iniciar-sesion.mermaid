@@ -1,0 +1,25 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant AC as AuthController
+    participant AS as AuthService
+    participant DB as Database
+
+    Cliente->>UI: Solicita Iniciar Sesión
+    UI->>AC: Envía credenciales (correo, contraseña)
+    AC->>AS: Validar credenciales(correo, contraseña)
+    AS->>DB: Consultar usuario por correo
+    DB-->>AS: Retorna datos del usuario (hashed password)
+    AS->>AS: Verificar contraseña (hash)
+    AS-->>AC: Retorna resultado de validación (usuario o error)
+    alt Si validación exitosa
+        AC->>AS: Generar token/sesión
+        AS-->>AC: Retorna token/sesión
+        AC->>UI: Redirigir a página principal / Dashboard
+        UI-->>Cliente: Muestra página principal / Dashboard
+    else Si validación falla
+        AC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+``` 

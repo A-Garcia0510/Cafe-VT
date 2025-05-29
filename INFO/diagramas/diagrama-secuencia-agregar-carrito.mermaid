@@ -1,0 +1,38 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant CC as CartController
+    participant CI as CartCommandInvoker
+    participant AC as AddToCartCommand
+    participant CS as CartService
+    participant DB as Database
+    participant Stock as Stock Management
+
+    Cliente->>UI: Selecciona 'Agregar al Carrito' (producto, cantidad)
+    UI->>CC: Enviar solicitud Agregar al Carrito(ID de usuario, ID de producto, cantidad)
+    CC->>CI: Crear AddToCartCommand(ID de usuario, ID de producto, cantidad)
+    CC->>CI: Ejecutar Comando
+    CI->>AC: execute()
+    AC->>CS: Validar stock y agregar item (ID de usuario, ID de producto, cantidad)
+    CS->>Stock: Verificar stock
+    Stock-->>CS: Confirmación de stock
+
+    alt Si stock suficiente
+        CS->>DB: Agregar/Actualizar item en tabla Carro
+        DB-->>CS: Confirmación
+        CS-->>AC: Confirmación de item agregado
+        AC-->>CI: Resultado exitoso
+        CI-->>CC: Resultado exitoso
+        CC->>UI: Actualizar visualización del carrito
+        UI-->>Cliente: Muestra carrito actualizado con el nuevo item
+    else Si stock insuficiente
+        CS-->>AC: Indica stock insuficiente
+        AC-->>CI: Resultado fallido
+        CI-->>CC: Resultado fallido
+        CC->>UI: Mostrar mensaje de stock insuficiente
+        UI-->>Cliente: Muestra mensaje de error
+    end
+
+    Note over CI,AC: El Command Pattern permite deshacer/rehacer (Gestión del Carrito)
+``` 

@@ -1,0 +1,43 @@
+```mermaid
+sequenceDiagram
+    actor Empleado
+    actor Admin
+    participant UI as Interfaz de Usuario
+    participant RC as ReviewController
+    participant RS as ReviewService
+    participant RP as ReviewProxy
+    participant DB as Database
+
+    Empleado->>UI: Solicita ver reseñas pendientes de moderación
+    Admin->>UI: Solicita ver reseñas pendientes de moderación
+    UI->>RC: Cargar lista de reseñas pendientes
+    RC->>RS: Obtener reseñas pendientes
+    RS->>RP: Crear ReviewProxy
+    RP->>DB: Consultar reseñas con estado 'pendiente'
+    DB-->>RP: Retorna lista de reseñas
+    RP-->>RS: Retorna lista de reseñas
+    RS-->>RC: Retorna lista de reseñas pendientes
+    RC->>UI: Mostrar lista de reseñas pendientes
+    UI-->>Empleado: Muestra lista
+    UI-->>Admin: Muestra lista
+
+    Empleado->>UI: Selecciona una reseña y acción (aprobar/rechazar)
+    Admin->>UI: Selecciona una reseña y acción (aprobar/rechazar)
+    UI->>RC: Enviar solicitud Moderar Reseña(ID de reseña, acción, ID de moderador)
+    RC->>RS: Moderar Reseña(ID de reseña, acción, ID de moderador)
+    RS->>RP: Crear ReviewProxy
+    RP->>DB: Actualizar estado de reseña y registrar en log de moderación
+    Note over RP,DB: Trigger after_review_update actualiza fecha_modificacion
+    DB-->>RP: Confirmación de actualización
+    RP-->>RS: Confirmación
+    RS-->>RC: Retorna resultado de moderación
+    alt Si moderación exitosa
+        RC->>UI: Mostrar mensaje de éxito y lista actualizada
+        UI-->>Empleado: Muestra confirmación y lista
+        UI-->>Admin: Muestra confirmación y lista
+    else Si falla la moderación
+        RC->>UI: Mostrar mensaje de error
+        UI-->>Empleado: Muestra mensaje de error
+        UI-->>Admin: Muestra mensaje de error
+    end
+``` 

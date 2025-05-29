@@ -1,0 +1,63 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    actor Empleado
+    participant UI as Interfaz de Usuario
+    participant COC as CustomOrderController
+    participant COS as CustomOrderService
+    participant Stock as Stock Management
+    participant DB as Database
+    participant Auth as Authentication Service
+
+    Cliente->>UI: Selecciona opción 'Realizar Pedido'
+    UI->>COC: Solicitar datos del pedido (ej. ID Receta o componentes, cantidad)
+
+    opt Si el usuario no está autenticado (incluye Iniciar Sesión)
+        COC->>Auth: Verificar autenticación
+        alt Si no autenticado
+            Auth-->>COC: Indica no autenticado
+            COC->>UI: Redirigir a página de Login
+            UI-->>Cliente: Solicita iniciar sesión
+            Note over Cliente,UI: El usuario completa el proceso de Iniciar Sesión (ver diagrama 'iniciar-sesion.mermaid')
+            Cliente->>UI: Regresa a la página de pedido (autenticado)
+            UI->>COC: Retomar solicitud de pedido
+        end
+    end
+
+    alt Pedido con Receta
+        COC->>COS: Validar pedido con receta(ID Receta, cantidad)
+        COS->>Stock: Verificar stock de componentes de la receta
+        Stock-->>COS: Confirmación de stock
+        COS-->>COC: Resultado de validación
+        alt Si stock suficiente
+            COC->>COS: Crear pedido con receta(ID Usuario, ID Receta, cantidad)
+            COS->>DB: Guardar pedido y detalles (trigger before_order_recipe_insert verifica stock)
+            DB-->>COS: Confirmación de guardado (trigger after_order_recipe_insert actualiza stock)
+            COS-->>COC: Confirmación de pedido
+            COC->>UI: Mostrar confirmación de pedido
+            UI-->>Cliente: Muestra detalles del pedido
+        else Si stock insuficiente
+            COC->>UI: Mostrar mensaje de stock insuficiente
+            UI-->>Cliente: Muestra mensaje de error
+        end
+    else Pedido Directo de Componentes
+        COC->>COS: Validar pedido directo(componentes, cantidades)
+        COS->>Stock: Verificar stock de componentes directos
+        Stock-->>COS: Confirmación de stock
+        COS-->>COC: Resultado de validación
+         alt Si stock suficiente
+            COC->>COS: Crear pedido directo(ID Usuario, componentes, cantidades)
+            COS->>DB: Guardar pedido y detalles (trigger before_order_direct_insert verifica stock)
+            DB-->>COS: Confirmación de guardado (trigger after_order_direct_insert actualiza stock)
+            COS-->>COC: Confirmación de pedido
+            COC->>UI: Mostrar confirmación de pedido
+            UI-->>Cliente: Muestra detalles del pedido
+        else Si stock insuficiente
+            COC->>UI: Mostrar mensaje de stock insuficiente
+            UI-->>Cliente: Muestra mensaje de error
+        end
+    end
+
+    Empleado->>UI: Selecciona opción 'Realizar Pedido' para Cliente
+    UI->>COC: ... (similar flow as Cliente)
+``` 

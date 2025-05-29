@@ -1,0 +1,17 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant PC as ProductController
+    participant PS as ProductService
+    participant DB as Database
+
+    Cliente->>UI: Solicita ver productos
+    UI->>PC: Cargar página de productos
+    PC->>PS: Obtener lista de productos
+    PS->>DB: Consultar productos activos
+    DB-->>PS: Retorna lista de productos
+    PS-->>PC: Retorna lista de productos
+    PC->>UI: Mostrar catálogo de productos
+    UI-->>Cliente: Muestra los productos disponibles
+``` 

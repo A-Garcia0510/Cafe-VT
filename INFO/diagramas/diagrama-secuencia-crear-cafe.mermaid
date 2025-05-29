@@ -1,0 +1,41 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant CCC as CustomCoffeeController
+    participant CCS as CustomCoffeeService
+    participant CB as CoffeeBuilder
+    participant CD as CoffeeDirector
+    participant DB as Database
+    participant Stock as Stock Management
+
+    Cliente->>UI: Selecciona opción 'Crear Café Personalizado'
+    UI->>CCC: Cargar página de creación de café
+    CCC->>CCS: Obtener componentes disponibles
+    CCS->>DB: Consultar componentes (bases, leches, endulzantes, toppings)
+    DB-->>CCS: Retorna lista de componentes
+    CCS-->>CCC: Retorna lista de componentes
+    CCC->>UI: Mostrar interfaz de creación con componentes
+    UI-->>Cliente: Muestra opciones para personalizar café
+
+    Cliente->>UI: Selecciona componentes y cantidades
+    UI->>CCC: Enviar selección de componentes(componentes, cantidades)
+    CCC->>CCS: Validar componentes y stock(componentes, cantidades)
+    CCS->>Stock: Verificar stock de componentes
+    Stock-->>CCS: Confirmación de stock
+    CCS-->>CCC: Retorna resultado de validación
+
+    alt Si validación exitosa
+        CCC->>CCS: Construir café(componentes, cantidades)
+        CCS->>CB: Crear Builder
+        CB->>CD: Crear Director
+        CD->>CB: Construir café con componentes
+        CB-->>CCS: Retorna objeto CustomCoffee
+        CCS-->>CCC: Retorna objeto CustomCoffee
+        CCC->>UI: Mostrar resumen del café creado y opción guardar receta
+        UI-->>Cliente: Muestra resumen y opciones
+    else Si validación falla
+        CCC->>UI: Mostrar mensaje de error (stock insuficiente, etc.)
+        UI-->>Cliente: Muestra mensaje de error
+    end
+``` 

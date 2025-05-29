@@ -1,0 +1,65 @@
+@startuml
+left to right direction
+
+actor Cliente
+actor Empleado
+actor Admin
+
+rectangle "Sistema de Café Personalizado" {
+
+
+        usecase "Iniciar Sesión" as UC1
+        usecase "Registrarse" as UC2
+        usecase "Gestionar Perfil" as UC3
+
+        usecase "Crear Café Personalizado" as UC4
+        usecase "Guardar Receta" as UC5
+        usecase "Realizar Pedido" as UC6
+        usecase "Cancelar Pedido" as UC7
+
+        usecase "Ver Productos" as UC8
+        usecase "Agregar al Carrito" as UC9
+        usecase "Quitar del Carrito" as UC10
+        usecase "Realizar Compra" as UC11
+
+        usecase "Escribir Reseña" as UC12
+        usecase "Moderar Reseñas" as UC13
+        usecase "Calificar Reseñas" as UC14
+
+
+' Relaciones Cliente
+Cliente --> UC1
+Cliente --> UC2
+Cliente --> UC3
+Cliente --> UC4
+Cliente --> UC5
+Cliente --> UC6
+Cliente --> UC7
+Cliente --> UC12
+Cliente --> UC14
+Cliente --> UC8
+Cliente --> UC9
+Cliente --> UC10
+Cliente --> UC11
+
+' Relaciones Empleado
+Empleado --> UC6
+Empleado --> UC7
+Empleado --> UC13
+
+' Relaciones Admin
+Admin --> UC13
+Admin --> UC3
+
+' Relaciones include/extend
+UC2 ..> UC1 : <<extend>>
+UC3 ..> UC1 : <<extend>>
+UC5 ..> UC4 : <<extend>>
+UC7 ..> UC6 : <<extend>>
+UC9 ..> UC8 : <<extend>>
+UC10 ..> UC9 : <<extend>>
+UC12 ..> UC11 : <<extend>>
+
+
+
+@enduml

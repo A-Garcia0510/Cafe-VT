@@ -1,5 +1,27 @@
 ```mermaid
 classDiagram
+    %% MVC Architecture
+    class Controller {
+        <<interface>>
+        +index()
+        +create()
+        +update()
+        +delete()
+    }
+
+    class Model {
+        <<interface>>
+        +save()
+        +find()
+        +delete()
+    }
+
+    class View {
+        <<interface>>
+        +render()
+        +display()
+    }
+
     %% Core Classes
     class App {
         +static App $app
@@ -23,6 +45,23 @@ classDiagram
         -build($concrete)
         +has($abstract)
         +clear()
+    }
+
+    %% Dependency Injection
+    class ServiceProvider {
+        <<interface>>
+        +register(Container $container)
+        +boot(Container $container)
+    }
+
+    class DatabaseServiceProvider {
+        +register(Container $container)
+        +boot(Container $container)
+    }
+
+    class CustomCoffeeServiceProvider {
+        +register(Container $container)
+        +boot(Container $container)
     }
 
     %% Request/Response Classes
@@ -71,6 +110,32 @@ classDiagram
         +fetchAll(string $sql, array $params)
     }
 
+    %% Review System (Proxy Pattern)
+    class ReviewInterface {
+        <<interface>>
+        +getReviews()
+        +addReview()
+        +moderateReview()
+    }
+
+    class Review {
+        -DatabaseInterface $db
+        +__construct(DatabaseInterface $db)
+        +getReviews()
+        +addReview()
+        +moderateReview()
+    }
+
+    class ReviewProxy {
+        -Review $review
+        -User $user
+        +__construct(Review $review, User $user)
+        +getReviews()
+        +addReview()
+        +moderateReview()
+        -checkPermissions()
+    }
+
     %% Shop Classes (Command Pattern)
     class CommandInterface {
         <<interface>>
@@ -86,6 +151,7 @@ classDiagram
         -int $quantity
         -bool $actualizar
         -bool $success
+        +__construct(CartService $cartService)
         +execute()
         +undo()
         +serialize()
@@ -98,6 +164,7 @@ classDiagram
         -int $productId
         -int $quantity
         -bool $success
+        +__construct(CartService $cartService)
         +execute()
         +undo()
         +serialize()
@@ -111,31 +178,11 @@ classDiagram
         -CartService $cartService
         -SplStack $undoStack
         -SplStack $redoStack
+        +__construct(CartService $cartService)
         +executeCommand(CommandInterface $command)
         +undoLastCommand()
         +redoLastCommand()
         +getCommandHistory()
-    }
-
-    %% Shop Services
-    class CartService {
-        -DatabaseInterface $db
-        -ProductRepositoryInterface $productRepository
-        +addItem(string $userId, int $productId, int $quantity)
-        +removeItem(string $userId, int $productId)
-        +getItems(string $userId)
-        +clear(string $userId)
-        +getTotal(string $userId)
-    }
-
-    class PurchaseService {
-        -DatabaseInterface $db
-        -CartInterface $cartService
-        -ProductRepositoryInterface $productRepository
-        -PurchaseRepository $purchaseRepository
-        +createPurchase(string $userId)
-        +getUserPurchases(string $userId)
-        +getPurchaseDetails(int $purchaseId)
     }
 
     %% Custom Coffee Classes (Builder Pattern)
@@ -164,6 +211,7 @@ classDiagram
     class CoffeeBuilder {
         -CustomCoffee $coffee
         -DatabaseInterface $db
+        +__construct(DatabaseInterface $db)
         +setBase(int $baseId)
         +addMilk(int $lecheId, int $cantidad)
         +addSweetener(int $endulzanteId, int $cantidad)
@@ -174,6 +222,7 @@ classDiagram
 
     class CoffeeDirector {
         -CoffeeBuilderInterface $builder
+        +__construct(CoffeeBuilderInterface $builder)
         +makeAmericano()
         +makeCafeConLeche()
         +makeMoka()
@@ -181,7 +230,35 @@ classDiagram
         +makeCustom(array $componentes)
     }
 
-    %% Relationships
+    %% Shop Services
+    class CartService {
+        -DatabaseInterface $db
+        -ProductRepositoryInterface $productRepository
+        +__construct(DatabaseInterface $db, ProductRepositoryInterface $productRepository)
+        +addItem(string $userId, int $productId, int $quantity)
+        +removeItem(string $userId, int $productId)
+        +getItems(string $userId)
+        +clear(string $userId)
+        +getTotal(string $userId)
+    }
+
+    class PurchaseService {
+        -DatabaseInterface $db
+        -CartInterface $cartService
+        -ProductRepositoryInterface $productRepository
+        -PurchaseRepository $purchaseRepository
+        +__construct(DatabaseInterface $db, CartInterface $cartService, ProductRepositoryInterface $productRepository, PurchaseRepository $purchaseRepository)
+        +createPurchase(string $userId)
+        +getUserPurchases(string $userId)
+        +getPurchaseDetails(int $purchaseId)
+    }
+
+    %% MVC Relationships
+    Controller --> Model : uses
+    Controller --> View : uses
+    Model --> DatabaseInterface : uses
+
+    %% Core Relationships
     App --> Router : creates
     App --> Request : creates
     App --> Response : creates
@@ -193,6 +270,17 @@ classDiagram
     Router --> Container : uses
     
     MySQLDatabase ..|> DatabaseInterface : implements
+    
+    %% Dependency Injection Relationships
+    ServiceProvider <|.. DatabaseServiceProvider : implements
+    ServiceProvider <|.. CustomCoffeeServiceProvider : implements
+    Container --> ServiceProvider : uses
+    App --> ServiceProvider : uses
+    
+    %% Review System Relationships
+    Review ..|> ReviewInterface : implements
+    ReviewProxy --> Review : uses
+    ReviewProxy ..|> ReviewInterface : implements
     
     %% Command Pattern Relationships
     AddToCartCommand ..|> CommandInterface : implements

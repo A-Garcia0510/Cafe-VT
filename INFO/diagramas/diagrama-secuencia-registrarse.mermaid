@@ -1,0 +1,22 @@
+```mermaid
+sequenceDiagram
+    actor Cliente
+    participant UI as Interfaz de Usuario
+    participant AC as AuthController
+    participant US as UserService
+    participant DB as Database
+
+    Cliente->>UI: Solicita Registrarse
+    UI->>AC: Envía datos de registro (nombre, correo, contraseña, etc.)
+    AC->>US: Crear nuevo usuario(datos)
+    US->>DB: Insertar nuevo usuario
+    DB-->>US: Confirmación de inserción / ID de usuario
+    US-->>AC: Retorna resultado de creación
+    alt Si creación exitosa
+        AC->>UI: Redirigir a página de confirmación o login
+        UI-->>Cliente: Muestra mensaje de éxito / página de confirmación
+    else Si falla la creación (ej. correo ya existe)
+        AC->>UI: Mostrar mensaje de error
+        UI-->>Cliente: Muestra mensaje de error
+    end
+``` 

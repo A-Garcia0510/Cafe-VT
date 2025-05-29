@@ -1,0 +1,67 @@
+```mermaid
+graph TB
+    subgraph Sistema de Café Personalizado
+        %% Actores
+        Cliente((Cliente))
+        Empleado((Empleado))
+        Admin((Administrador))
+        
+        %% Casos de Uso Principales
+        subgraph Gestión de Usuarios
+            Login[Iniciar Sesión]
+            Register[Registrarse]
+            Profile[Gestionar Perfil]
+        end
+        
+        subgraph Gestión de Café
+            CreateCoffee[Crear Café Personalizado]
+            SaveRecipe[Guardar Receta]
+            OrderCoffee[Realizar Pedido]
+            CancelOrder[Cancelar Pedido]
+        end
+
+        subgraph Gestión de Productos
+            ViewProducts[Ver Productos]
+            AddToCart[Agregar al Carrito]
+            RemoveFromCart[Quitar del Carrito]
+            Checkout[Realizar Compra]
+        end
+        
+        subgraph Gestión de Reseñas
+            WriteReview[Escribir Reseña]
+            ModerateReview[Moderar Reseñas]
+            RateReview[Calificar Reseñas]
+        end
+        
+        %% Relaciones Cliente
+        Cliente --> Login
+        Cliente --> Register
+        Cliente --> Profile
+        Cliente --> CreateCoffee
+        Cliente --> SaveRecipe
+        Cliente --> OrderCoffee
+        Cliente --> CancelOrder
+        Cliente --> WriteReview
+        Cliente --> RateReview
+        Cliente --> ViewProducts
+        Cliente --> AddToCart
+        Cliente --> RemoveFromCart
+        Cliente --> Checkout
+        
+        %% Relaciones Empleado
+        Empleado --> OrderCoffee
+        Empleado --> CancelOrder
+        Empleado --> ModerateReview
+        
+        %% Relaciones Admin
+        Admin --> ModerateReview
+        Admin --> Profile
+    end
+    
+    %% Estilos
+    classDef actor fill:#f9f,stroke:#333,stroke-width:2px
+    classDef usecase fill:#bbf,stroke:#333,stroke-width:2px
+    
+    class Cliente,Empleado,Admin actor
+    class Login,Register,Profile,CreateCoffee,SaveRecipe,OrderCoffee,CancelOrder,WriteReview,ModerateReview,RateReview,ViewProducts,AddToCart,RemoveFromCart,Checkout usecase
+``` 
