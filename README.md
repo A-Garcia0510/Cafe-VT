@@ -150,7 +150,7 @@ cp env.example .env
 ```bash
 # Iniciar la API de fidelización
 cd src/loyalty
-python main.py
+py -m uvicorn main:app --host 0.0.0.0 --port 8000
 
 # La aplicación PHP se ejecuta a través del servidor web
 ```
@@ -225,4 +225,4 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 - Sitio Web: [www.cafe-vt.com](https://www.cafe-vt.com)
 
 ---
-Desarrollado con ❤️ para la comunidad universitaria
+Desarrollado con ❤️ para todo el Mundo
